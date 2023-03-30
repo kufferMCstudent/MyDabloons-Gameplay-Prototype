@@ -105,7 +105,7 @@ def main():
     print('              __,.-" =__Y=')
     print('            ."        )             My Dabloons!')
     print('      _    /   ,    \/\_   The Prorotype for the card game.')
-    print('     ((____|    )_-\ \_-`')
+    print('     ((____|    )_-\ \_-`         Version a1.0.1')
     print("     `-----'`-----` `--`")
 
     player = makePlayer()
