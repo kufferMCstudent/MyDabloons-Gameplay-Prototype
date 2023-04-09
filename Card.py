@@ -1,9 +1,9 @@
 """
 Katherine Uffer
-March 26, 2023
+April 9, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.0.1
+VERSION a1.1.0
 
 Card Class
 
@@ -15,21 +15,16 @@ FEATURES:
     - Flavor text
     - Effect
     - Challenge Effect
+    - Haunt
 
 CHANGELOG:
-    - Added Name of Card private variable
-    - Added Type of Card private variable
-    - Added Fight Stat private variable
-    - Added Armor Stat private variable
-    - Added Flavor text private variable
-    - Added Effect private variable
-    - Added Challenge Effect private variable
-    - Added constructor function
-    - Added getters for all private variables
+    - Added Haunt private variable
+    - Added Haunt as a variable in constructor
+    - Added getter for Haunt
 
 """
 class Card:
-    def __init__(self, a, b, c, d, e, f, g):
+    def __init__(self, a, b, c, d, e, f, g, h):
         self.__cardName = a #string
         self.__cardType = b #int: 0 = Coin, 1 = Enemy, 2 = Item
         self.__fightStat = c #int
@@ -37,6 +32,7 @@ class Card:
         self.__flavorText = e #string
         self.__effect = f #int
         self.__challengeEffect = g #int
+        self.__haunt = h #int
 
     def getCardName(self):
         return self.__cardName
@@ -58,6 +54,9 @@ class Card:
     
     def getChallengeEffect(self):
         return self.__challengeEffect
+    
+    def getHaunt(self):
+        return self.__haunt
     
     def printItemCard(self):
             temp = "Name: "

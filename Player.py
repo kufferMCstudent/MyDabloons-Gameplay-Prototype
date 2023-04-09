@@ -3,7 +3,7 @@ Katherine Uffer
 March 26, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.0.1
+VERSION a1.1.0
 
 Player Class
 
@@ -15,16 +15,7 @@ FEATURES:
     - Card Hand
 
 CHANGELOG:
-    - Added Name private variable
-    - Added Fight Stat private variable
-    - Added Armor Stat private variable
-    - Added Balance private variable
-    - Added Hand private variable
-    - Added constructor function
-    - Added getters for all private variables
-    - Added setters for fightStat, ArmorStat, balance, and hand
-    - Added removeCard function to remove a card from the hand
-    - Added addCard function to add card to the hand
+    - n/a
 
 """
 class Player:

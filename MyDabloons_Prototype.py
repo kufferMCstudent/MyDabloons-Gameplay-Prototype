@@ -1,32 +1,36 @@
 """
 Katherine Uffer
-March 26, 2023
+April 9, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.0.1
+VERSION a1.1.0
 
 Main Class
 
 FEATURES:
     - Deck of cards
     - Main gameplay loop
-    - Option to end game every 10 turns
+    - "Haunt" Mechanic: After the "Haunt" counter reaches 10 the game will end in 10 turns
 
 CHANGELOG:
-    - Added DECK constant list
-    - Added +1 and -1 coins cards with fight stats 3-5
-    - Added +1 armor and fight cards
-    - Added Phase 1, 2, and 3 of main gameplay loop (only 1 and 3 are their own functions)
+    - Added Haunt value to main()
+    - Changed gameplay while loop to call gameplayLoop() function instade of Phase1() and Phase3()
+    - Changed while loop condition to go until haunt = 10
+    - Added endgame while loop in main() where game will end in 10 turns
+    - Added haunt variable parameter to Phase1()
+    - Added positive Haunt value to 3 cards
+    - Added end-game spash screen to show final stats
+    - Added description of main() function
 
 """
 import random
 import Card #cardName, cardType, fightStat, armorStat, flavorText
-import Player #name, fightStat, armorStat, balance, hand, effect, challengeEffect
+import Player #name, fightStat, armorStat, balance, hand, effect, challengeEffect, haunt
 
-DECK = [ Card.Card("Plus 1 Coin", 0, 3, 0, "Challenge: Plus 1 extra coin", 1, 2), Card.Card("Minus 1 Coin", 0, 3, 0, "Challenge: Loose no coins", -1, 0), 
-         Card.Card("Plus 1 Coin", 0, 4, 0, "Challenge: Plus 1 extra coin", 1, 2), Card.Card("Minus 1 Coin", 0, 4, 0, "Challenge: Loose no coins", -1, 0),
-         Card.Card("Plus 1 Coin", 0, 5, 0, "Challenge: Plus 1 extra coin", 1, 2), Card.Card("Minus 1 Coin", 0, 5, 0, "Challenge: Loose no coins", -1, 0),
-         Card.Card("Armor", 2, 0, 1, "Plus 1 Armor Stat", 0, 0), Card.Card("Sword", 2, 1, 0, "Plus 1 Fight Stat", 0, 0)  ]
+DECK = [ Card.Card("Plus 1 Coin", 0, 3, 0, "Challenge: Plus 1 extra coin", 1, 2, 1), Card.Card("Minus 1 Coin", 0, 3, 0, "Challenge: Loose no coins", -1, 0, 0), 
+         Card.Card("Plus 1 Coin", 0, 4, 0, "Challenge: Plus 1 extra coin", 1, 2, 0), Card.Card("Minus 1 Coin", 0, 4, 0, "Challenge: Loose no coins", -1, 0, 1),
+         Card.Card("Plus 1 Coin", 0, 5, 0, "Challenge: Plus 1 extra coin", 1, 2, 0), Card.Card("Minus 1 Coin", 0, 5, 0, "Challenge: Loose no coins", -1, 0, 1),
+         Card.Card("Armor", 2, 0, 1, "Plus 1 Armor Stat", 0, 0, 0), Card.Card("Sword", 2, 1, 0, "Plus 1 Fight Stat", 0, 0, 0)  ]
 
 """
 FUNCTION: makePlayer()
@@ -41,19 +45,24 @@ def makePlayer():
 
 """
 FUNCTION: phaseOne()
-PARAMETERS: Player object
-RETURN: none
+PARAMETERS: Player object, int haunt
+RETURN: int haunt
 PURPOSE: Run player through Phase 1 of the core gameplay loop. This includes: 
             - Drawing a card from the deck
             - (Based on card type) Prompting the user to enter Phase 2
             - If Phase 2 is entered, take in choice and update stats according to win or loose
             - If Phase 2 is NOT entered, update stats or add Item card to player's hand
+            - If card with a haunt value is pulled, increment haunt
+        Returns haunt value abck to where it was called from
 """
-def phaseOne(a):
+def phaseOne(a, b):
     pick = DECK[random.randrange(0, 7, 1)]
     print(pick.getCardName())
     print(pick.getFlavorText())
-    if pick.getCardType() == 0: #if coin card, offer challenge(Phase 2) and update stats
+    if pick.getCardType() == 0: #if coin card, check haunt and offer challenge(Phase 2) and update stats
+
+        if pick.getHaunt() > 0: #if there is a Haunt value to the card
+            b += pick.getHaunt()
 
         choice = input("Would you like to challenge this card (y/n): ")
 
@@ -74,6 +83,8 @@ def phaseOne(a):
 
     elif pick.getCardType() == 2: #if item card, add to hand
         a.addCard(pick)
+
+    return b
 """
 FUNCTION: phaseThree()
 PARAMETERS: Player object
@@ -97,35 +108,56 @@ def phaseThree(a):
             a.setArmorStat((a.getArmorStat() + currentHand[int(choice)-1].getArmorStat()))
             currentHand.remove(currentHand[int(choice)-1])
             a.setHand(currentHand)
-        
 
+"""
+FUNCTION: gameplayLoop()
+PARAMETERS: Player object, int haunt
+RETURN: int haunt
+PURPOSE: Run player through Phase 1, 2, and 3, and print Player stats. Keep track of haunt value.
+         Returns the haunt value to where it was called from
+"""
+def gameplayLoop(player, haunt):
+    haunt = phaseOne(player, haunt)
+    phaseThree(player)
+    print()
+    print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()))
+    print()
+    return haunt
+
+"""
+FUNCTION: main()
+PARAMETERS: none
+RETURN: none
+PURPOSE: Print start game splashscreen, call makePlayer() and save object to a variable. Print beginning stats.
+         Run main game while loop and endgame while loop. Print endgame stats.
+"""
 def main():
     print('                   _ |\_')
     print("                   \` ..\ ")
     print('              __,.-" =__Y=')
     print('            ."        )             My Dabloons!')
     print('      _    /   ,    \/\_   The Prorotype for the card game.')
-    print('     ((____|    )_-\ \_-`         Version a1.0.1')
+    print('     ((____|    )_-\ \_-`         Version a1.1.0')
     print("     `-----'`-----` `--`")
 
     player = makePlayer()
     counter = 0
+    haunt = 0
     print(player.getName())
     print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()))
 
-    while True:
+    while haunt != 10:
         counter += 1
         print("--------------------------- Turn", counter)
-        phaseOne(player)
-        phaseThree(player)
-        print()
-        print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()))
-        print()
+        haunt = gameplayLoop(player, haunt)
 
-        if counter%10 == 0: #arbitrary condition to ask user to end gameplay
-            cont = input("Would you like to continue playing (y/n): ").strip()
-            if cont == 'n':
-                break
+    for i in range(10, 0, -1):
+        print("---------------------------", i, "Turns Left!")
+        gameplayLoop(player, haunt)
+
+    print("Thanks for Playing!!!")
+    print(player.getName(), "'s Final Stats:")
+    print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()))
         
 
 if __name__ == "__main__":
