@@ -1,9 +1,9 @@
 """
 Katherine Uffer
-March 26, 2023
+April 10, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.1.0
+VERSION a1.2.0
 
 Player Class
 

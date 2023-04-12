@@ -1,9 +1,9 @@
 """
 Katherine Uffer
-April 9, 2023
+April 10, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.1.0
+VERSION a1.2.0
 
 Card Class
 
@@ -13,20 +13,19 @@ FEATURES:
     - Fight Stat
     - Armor Stat
     - Flavor text
-    - Effect
-    - Challenge Effect
+    - Effect/Buy Price
+    - Challenge Effect/Sell Price
     - Haunt
 
 CHANGELOG:
-    - Added Haunt private variable
-    - Added Haunt as a variable in constructor
-    - Added getter for Haunt
+    - Modified Effect and Challenge Effect to double as Buy Price and Sell Price
+    - Updated cardType value 1 to mean Shop
 
 """
 class Card:
     def __init__(self, a, b, c, d, e, f, g, h):
         self.__cardName = a #string
-        self.__cardType = b #int: 0 = Coin, 1 = Enemy, 2 = Item
+        self.__cardType = b #int: 0 = Coin, 1 = Shop, 2 = Item
         self.__fightStat = c #int
         self.__armorStat = d #int
         self.__flavorText = e #string
@@ -62,5 +61,21 @@ class Card:
             temp = "Name: "
             temp = temp + self.__cardName + "\t"
             temp = temp + self.__flavorText + "\tFight: +"
-            temp = temp + str(self.__fightStat) + "\tArmor: +", str(self.__armorStat)
+            temp = temp + str(self.__fightStat) + "\tArmor: +" + str(self.__armorStat)
+            return temp
+    
+    def printBuyCard(self):
+            temp = "Name: "
+            temp = temp + self.__cardName + "\t"
+            temp = temp + self.__flavorText + "\tFight: +"
+            temp = temp + str(self.__fightStat) + "\tArmor: +" + str(self.__armorStat)
+            temp = temp + "\tPRICE:" + str(self.__effect)
+            return temp
+    
+    def printSellCard(self):
+            temp = "Name: "
+            temp = temp + self.__cardName + "\t"
+            temp = temp + self.__flavorText + "\tFight: +"
+            temp = temp + str(self.__fightStat) + "\tArmor: +" + str(self.__armorStat)
+            temp = temp + "\tVALUE:" + str(self.__challengeEffect)
             return temp
