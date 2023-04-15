@@ -3,7 +3,7 @@ Katherine Uffer
 April 10, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.2.0
+VERSION a1.2.1
 
 Main Class
 
@@ -11,13 +11,11 @@ FEATURES:
     - Deck of cards
     - Main gameplay loop
     - "Haunt" Mechanic: After the "Haunt" counter reaches 10 the game will end in 10 turns
-    - Shop to buy items
+    - Shop to buy *and sell* items
 
 CHANGELOG:
-    - Updated Armor and Sword cards in DECK with buy and sell values
-    - Created SHOPDECK constant list to include exclusive shop cards
-    - Added enterShop() and description
-    - Added buy() and description
+    - Added sell() and description
+    - Updated Game Splashscreen
 
 """
 import random
@@ -48,8 +46,7 @@ def makePlayer():
 FUNCTION: buy()
 PARAMETERS: Player Object, int Number of Cards, string Input, list Shop Deck
 RETURN: Player object, Number of Cards
-PURPOSE:
-        - Propmt Player with 3 items from SHOPDECK the Player can buy using balance. 
+PURPOSE:- Propmt Player with 3 items from SHOPDECK the Player can buy using balance. 
         - If balance insufficent, tell Player purchase not made. 
         - If balance sufficient, update balance and add card to Player Hand. 
         - If no more cards to buy, state shop empty
@@ -71,29 +68,64 @@ def buy(player, numbCards, buySell, inShop):
                     if inShop[buySell-1].getEffect() < player.getBalance(): #if the player can afford the item
                         player.addCard(inShop[buySell-1]) #add card to hand
                         player.setBalance(player.getBalance() - inShop[buySell-1].getEffect()) #Update player balance
+                        print("---Thanks for purchasing", inShop[buySell-1].getCardName())
                         inShop.remove(inShop[buySell-1]) #remove card from shop
                         numbCards -= 1 #subtract number of cards
-                        print("---Thanks for purchasing", inShop[buySell-1].getCardName())
                     else:
                         print("--- Sorry! Looks like you cannot afford that item.")
                 else:
                      print("--- Incorrect Input.")
-    else:
+    else: #if there are no mare cards in the deck
         print("--- You've bought out the whole shop!")
     return player, numbCards, inShop
-        
+
+"""
+FUNCTION: sell()
+PARAMETERS: Player Object, str
+RETURN: Player object
+PURPOSE: - Prompt player with all cards in Hand and number them
+         - Player will select card to sell by number
+         - Update balance and remove card from Hand
+         - If no cards in hand, state hand is empty
+"""
+def sell(player, buySell):
+    playerHand = player.getHand() #Get player's current hand
+    handSize = len(playerHand)
+    if handSize > 0: #If the player has cards in their hand
+        while buySell != 'n' and handSize != 0:
+            
+            printNumb = ""
+            for i in range(0, handSize): #Print cards
+                print(f"{i+1}: {playerHand[i].printSellCard()}")
+                printNumb = printNumb + str(i+1) + ","
+            
+            buySell = input(f"--- What would you like to sell (n for none)? ({printNumb} n): ").strip() #Get input
+
+            if buySell.isnumeric(): #if number
+                buySell = int(buySell) #turn into int from string
+                if buySell <= handSize and buySell > 0: #if selected number in in range
+                    player.setBalance(player.getBalance() + playerHand[buySell-1].getChallengeEffect())#Add card value to balance
+                    print("---Thanks for selling", playerHand[buySell-1].getCardName())
+                    playerHand.remove(playerHand[buySell-1])#Remove Card from Hand
+                    player.setHand(playerHand)#Update Hand
+                    handSize -= 1 #decrement hand size
+                else:
+                    print("--- Incorrect Input.")
+            else:
+                print("--- Incorrect Input.")
+
+    else: #If the player has no more cards
+        print("--- You don't have anything to sell!")
+    
+    return player
+
 """
 FUNCTION: enterShop()
 PARAMETERS: Player Object
 RETURN: Player object
 PURPOSE: Propmt Player to Buy Items, Sell items, or leave. First, generate the cards that the shop has
-         to sell that is passed to the buy() function if it is called
-           
-         If sell:
-                - Prompt player with all cards in Hand and number them
-                - Player will select card to sell by number
-                - Update balance and remove card from Hand
-         Player may leave the shop by typing 'L'
+         to sell that is passed to the buy() function if it is called. Then, take Player input to buy, 
+         sell, leave, or neither. Player may leave the shop by typing 'L'
 """
 def enterShop(player):
     print("\n--- Welcome to the Shop!---\n")
@@ -117,7 +149,7 @@ def enterShop(player):
             player, numbCards, inShop = buy(player, numbCards, buySell, inShop)
                     
         elif buySell == 's': #If Player wants to sell
-            pass
+            player = sell(player, buySell)
         
         elif buySell != 'L': #If improper input
             print("--- Improper Input ")
@@ -218,7 +250,7 @@ def main():
     print('              __,.-" =__Y=')
     print('            ."        )             My Dabloons!')
     print('      _    /   ,    \/\_   The Prorotype for the card game.')
-    print('     ((____|    )_-\ \_-`         Version a1.1.0')
+    print('     ((____|    )_-\ \_-`         Version a1.2.1')
     print("     `-----'`-----` `--`")
 
     player = makePlayer()

@@ -3,7 +3,7 @@ Katherine Uffer
 April 10, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.2.0
+VERSION a1.2.1
 
 Card Class
 
@@ -18,8 +18,7 @@ FEATURES:
     - Haunt
 
 CHANGELOG:
-    - Modified Effect and Challenge Effect to double as Buy Price and Sell Price
-    - Updated cardType value 1 to mean Shop
+    - n/a
 
 """
 class Card:
