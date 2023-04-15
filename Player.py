@@ -3,7 +3,7 @@ Katherine Uffer
 April 15, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.2.1
+VERSION a1.3.0
 
 Player Class
 
@@ -13,18 +13,21 @@ FEATURES:
     - Armor Stat
     - Coin Balance
     - Card Hand
+    - Class
 
 CHANGELOG:
-    - n/a
+    - Added private variable charClass
+    - Added setter and getter for charClass
 
 """
 class Player:
-    def __init__(self, a, b, c, d, e):
+    def __init__(self, a, b, c, d, e, f):
         self.__name = a #string
         self.__fightStat = b #int
         self.__armorStat = c #int
         self.__balance = d #int
         self.__hand = e #list
+        self.__charClass = f #int, 0 = Attacker, 1 = Defender
 
     def removeCard(self, a):
         self.__hand.remove(a)
@@ -44,6 +47,9 @@ class Player:
     def setHand(self, a):
         self.__hand = a
 
+    def setClass(self, a):
+        self.__charClass = a
+
     def getName(self):
         return self.__name
     
@@ -58,3 +64,6 @@ class Player:
     
     def getHand(self):
         return self.__hand
+    
+    def getClass(self):
+        return self.__charClass
