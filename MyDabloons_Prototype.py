@@ -40,7 +40,7 @@ PURPOSE: Propmt user for string to name their character and return
 """
 def makePlayer():
     name = input("Type your character's name here: ")
-    return Player.Player(name, 3, 0, 100, [])
+    return Player.Player(name, 3, 0, 5, [])
 
 """
 FUNCTION: buy()
