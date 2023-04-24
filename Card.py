@@ -3,7 +3,7 @@ Katherine Uffer
 April 15, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.3.0
+VERSION a1.3.1
 
 Card Class
 
@@ -18,13 +18,13 @@ FEATURES:
     - Haunt
 
 CHANGELOG:
-    - n/a
+    - Changed expected values for cardType to accomodate new phaseTwo() implementation
 
 """
 class Card:
     def __init__(self, a, b, c, d, e, f, g, h):
         self.__cardName = a #string
-        self.__cardType = b #int: 0 = Coin, 1 = Shop, 2 = Item
+        self.__cardType = b #int: 0 = Fight Coin, 1 = Armor Coin, 2 = Shop, 3 = Item
         self.__fightStat = c #int
         self.__armorStat = d #int
         self.__flavorText = e #string

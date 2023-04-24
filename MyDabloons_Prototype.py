@@ -3,7 +3,7 @@ Katherine Uffer
 April 15, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.3.0
+VERSION a1.3.1
 
 Main Class
 
@@ -14,36 +14,28 @@ FEATURES:
     - "Haunt" Mechanic: After the "Haunt" counter reaches 10 the game will end in 10 turns
     - Shop to buy *and sell* items
     - Go bankrupt to end the game early
+    - Limited number of chances to gain card bonuses
 
 CHANGELOG:
-    - Added CLASSES global list
-    - Added class selection to makePlayer() and modifed returned Player object based on class choice
-    - Added class to statement at the beginning of the game and end of game
-    - Fixed hand printing bug in PhaseThree()
-    - Fixed user input prompt in PhaseThree()
-    - Implemented enterShop() in PhaseOne()
-    - Added Shop Card to DECK
-    - Fixed buy() bug where Player couldn't buy an item equal to their balance
-    - Added bankrup feature if Player balance goes below 0
-    - Added bankrupt check in PhaseOne()
-    - Added bankrupt check in main() to print different end screen
-    - Changed "Plus 1 Coins" cards to have different challenge effects
-    - Added "Plus 3 Coins" and "Minus 2 Coins" cards with varying challenge difficulty and rewards
-    - Fixed bug in sell() where printing loop would index out of range after an item was sold
-    - Added Balance print to the top of every buy, sell, and shop action
+    - Added phaseTwo() function and moved code from phaseOne() to phaseTwo()
+    - Added a limit to the number of challenges a Player can make in a game
+    - Changed balancing of Fight and Armor for cards in deck and Class starting stats
+    - Changed cardTypes to reflect changes in Card class
 
 """
 import random
 import Card #cardName, cardType, fightStat, armorStat, flavorText, effect/buyPrice, challengeEffect/ sellPrice, haunt
 import Player #name, fightStat, armorStat, balance, hand, class
 
-DECK = [ Card.Card("Plus 1 Coin", 0, 3, 0, "Challenge: Plus 1 extra coin", 1, 2, 1), Card.Card("Minus 1 Coin", 0, 3, 0, "Challenge: Loose no coins", -1, 0, 0), 
-         Card.Card("Plus 1 Coin", 0, 4, 0, "Challenge: Plus 2 extra coin", 1, 3, 0), Card.Card("Minus 1 Coin", 0, 4, 0, "Challenge: Loose no coins", -1, 0, 1),
-         Card.Card("Plus 1 Coin", 0, 5, 0, "Challenge: Plus 3 extra coin", 1, 4, 0), Card.Card("Minus 1 Coin", 0, 5, 0, "Challenge: Loose no coins", -1, 0, 1),
-         Card.Card("Plus 3 Coin", 0, 4, 0, "Challenge: Plus 1 extra coin", 3, 4, 1), Card.Card("Minus 2 Coin", 0, 3, 0, "Challenge: Loose no coins", -2, 0, 0), 
-         Card.Card("Plus 3 Coin", 0, 5, 0, "Challenge: Plus 2 extra coin", 3, 5, 0), Card.Card("Minus 2 Coin", 0, 4, 0, "Challenge: Loose no coins", -2, 0, 1),
-         Card.Card("Plus 3 Coin", 0, 6, 0, "Challenge: Plus 3 extra coin", 3, 6, 0), Card.Card("Minus 2 Coin", 0, 5, 0, "Challenge: Loose no coins", -2, 0, 1),
-         Card.Card("Shop", 1, 0, 0, "", 0, 0, 0), Card.Card("Armor", 2, 0, 1, "Plus 1 Armor Stat", 7, 5, 0), Card.Card("Sword", 2, 1, 0, "Plus 1 Fight Stat", 7, 5, 0)  ]
+DECK = [ Card.Card("Plus 1 Coin", 0, 1, 1, "Challenge: Plus 1 extra coin", 1, 2, 1), Card.Card("Minus 1 Coin", 0, 1, 1, "Challenge: Loose no coins", -1, 0, 0), 
+         Card.Card("Plus 1 Coin", 1, 1, 2, "Challenge: Plus 2 extra coin", 1, 3, 0), Card.Card("Minus 1 Coin", 1, 1, 2, "Challenge: Loose no coins", -1, 0, 1),
+         Card.Card("Plus 1 Coin", 0, 2, 1, "Challenge: Plus 3 extra coin", 1, 4, 0), Card.Card("Minus 1 Coin", 0, 2, 1, "Challenge: Loose no coins", -1, 0, 1),
+         Card.Card("Plus 3 Coin", 1, 3, 3, "Challenge: Plus 1 extra coin", 3, 4, 1), Card.Card("Minus 2 Coin", 1, 2, 2, "Challenge: Loose no coins", -2, 0, 0), 
+         Card.Card("Plus 3 Coin", 1, 3, 4, "Challenge: Plus 2 extra coin", 3, 5, 0), Card.Card("Minus 2 Coin", 1, 2, 3, "Challenge: Loose no coins", -2, 0, 1),
+         Card.Card("Plus 3 Coin", 0, 4, 3, "Challenge: Plus 3 extra coin", 3, 6, 0), Card.Card("Minus 2 Coin", 0, 3, 2, "Challenge: Loose no coins", -2, 0, 1),
+         Card.Card("Shop", 2, 0, 0, "", 0, 0, 0), 
+         Card.Card("Armor", 3, 0, 1, "Plus 1 Armor Stat", 7, 5, 0), Card.Card("Sword", 3, 1, 0, "Plus 1 Fight Stat", 7, 5, 0),
+         Card.Card("Armor", 3, 0, 1, "Plus 1 Armor Stat", 7, 5, 0), Card.Card("Sword", 3, 1, 0, "Plus 1 Fight Stat", 7, 5, 0)  ]
 
 SHOPDECK = [ Card.Card("Armor", 2, 0, 1, "Plus 1 Armor Stat", 7, 5, 0), Card.Card("Sword", 2, 1, 0, "Plus 1 Fight Stat", 7, 5, 0),
              Card.Card("Armor", 2, 0, 2, "Plus 2 Armor Stat", 14, 9, 0), Card.Card("Sword", 2, 2, 0, "Plus 2 Fight Stat", 14, 9, 0),
@@ -69,9 +61,9 @@ def makePlayer():
         classChoice = input("Input: ").strip()
     
     if classChoice == CLASSES[0]: #If Attacker chosen
-        return Player.Player(name, 3, 0, 5, [], 0)
+        return Player.Player(name, 2, 1, 5, [], 0, 5)
     elif classChoice == CLASSES[1]: #If Defender Chosen
-        return Player.Player(name, 0, 3, 5, [], 1)
+        return Player.Player(name, 1, 2, 5, [], 1, 5)
 
 """
 FUNCTION: buy()
@@ -190,6 +182,62 @@ def enterShop(player):
     return player
 
 """
+FUNCTION: phaseTwo()
+PARAMETERS: Player object, Card object
+RETURN: Player object
+PURPOSE: Run through Phase 2 of the gameplay loop. If the player is able to make a challenge, do the following:
+                - If Fight Card, ask user of they want to challenge the card using their fight stat
+                - If Armor Card, ask user of they want to challenge the card using their armor stat
+                - If player wins the challenge, apply bonus
+                - If player loses the challenge, decrement their chances and do basic card action
+         If the player has no more challenges to make, just do the basic card action
+"""
+def phaseTwo(player, card):
+
+    print(card.getCardName())
+    print(card.getFlavorText())
+
+    if player.getNumbLives() > 0: #if the player can make a challenge
+
+        if card.getCardType() == 0: #Fight Card
+            
+            choice = input(f"\nYour current Fight stat is {player.getFightStat()}.\n\nWould you like to take a chance and challenge this card?\nYou have {player.getNumbLives()} chances left to take (y/n): ")
+
+            if choice == 'y':
+                if(player.getFightStat() > card.getFightStat()): #if Player is stronger
+                    print("You win the challenge! Bonus activated.")
+                    player.setBalance(player.getBalance() + card.getChallengeEffect())
+
+                else:
+                    print("You were not strong enough to win the challenge. You lose 1 chance.")
+                    player.setBalance(player.getBalance() + card.getEffect())
+                    player.setNumbLives(player.getNumbLives() - 1)
+
+            else: #if no challenge made
+                player.setBalance(player.getBalance() + card.getEffect())
+
+        elif card.getCardType() == 1: #Armor Card
+            choice = input(f"\nYour current Armor stat is {player.getArmorStat()}.\n\nWould you like to take a chance and challenge this card?\nYou have {player.getNumbLives()} chances left to take (y/n): ")
+
+            if choice == 'y':
+                if(player.getArmorStat() > card.getArmorStat()): #if Player is stronger
+                    print("You win the challenge! Bonus activated.")
+                    player.setBalance(player.getBalance() + card.getChallengeEffect())
+
+                else:
+                    print("You were not strong enough to win the challenge. You lose 1 chance.")
+                    player.setBalance(player.getBalance() + card.getEffect())
+                    player.setNumbLives(player.getNumbLives() - 1)
+
+            else: #if no challenge made
+                player.setBalance(player.getBalance() + card.getEffect())
+
+    else: #if no challenge can be made
+        player.setBalance(player.getBalance() + card.getEffect())
+
+    return player
+
+"""
 FUNCTION: phaseOne()
 PARAMETERS: Player object, int haunt
 RETURN: int haunt
@@ -208,31 +256,21 @@ def phaseOne(a, b):
         return 12
 
     pick = DECK[random.randrange(0, len(DECK), 1)]
-    print(pick.getCardName())
-    print(pick.getFlavorText())
-    if pick.getCardType() == 0: #if coin card, check haunt and offer challenge(Phase 2) and update stats
+    
+    if pick.getCardType() == 0 or pick.getCardType() == 1: #if coin card, check haunt and offer challenge(Phase 2) and update stats
 
         if pick.getHaunt() > 0: #if there is a Haunt value to the card
             b += pick.getHaunt()
 
-        choice = input("Would you like to challenge this card (y/n): ")
+        a = phaseTwo(a, pick)
 
-        if choice == 'y':
-            if(a.getFightStat()+a.getArmorStat() > pick.getFightStat()+pick.getArmorStat()): #if Player is stronger
-                print("You win the challenge! Bonus activated.")
-                a.setBalance(a.getBalance() + pick.getChallengeEffect())
-
-            else:
-                print("You did not win the challenge. :(")
-                a.setBalance(a.getBalance() + pick.getEffect())
-
-        else: #if no challenge made
-            a.setBalance(a.getBalance() + pick.getEffect())
-
-    elif pick.getCardType() == 1: #if shop card, enter shop
+    elif pick.getCardType() == 2: #if shop card, enter shop
         a = enterShop(a)
 
-    elif pick.getCardType() == 2: #if item card, add to hand
+    elif pick.getCardType() == 3: #if item card, print text, and add to hand
+        print(pick.getCardName())
+        print(pick.getFlavorText())
+
         a.addCard(pick)
 
     return b
@@ -272,7 +310,7 @@ def gameplayLoop(player, haunt):
     haunt = phaseOne(player, haunt)
     phaseThree(player)
     print()
-    print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()))
+    print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()) + "\tChances: " + str(player.getNumbLives()))
     print()
     return haunt
 
@@ -289,14 +327,16 @@ def main():
     print('              __,.-" =__Y=')
     print('            ."        )             My Dabloons!')
     print('      _    /   ,    \/\_   The Prorotype for the card game.')
-    print('     ((____|    )_-\ \_-`         Version a1.2.1')
+    print('     ((____|    )_-\ \_-`         Version a1.3.1')
     print("     `-----'`-----` `--`")
 
     player = makePlayer()
     counter = 0
     haunt = 0
+
+    print()
     print(player.getName(), "the", CLASSES[player.getClass()])
-    print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()))
+    print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()) + "\tChances: " + str(player.getNumbLives()))
 
     while haunt != 10:
         counter += 1
@@ -306,7 +346,7 @@ def main():
     if haunt == 12: #If the player went Bankrupt
         print("\nYou went BANKRUPT!!!\n\nTry better next time!\n\nThanks for Playing!!!")
         print(player.getName(), "the", CLASSES[player.getClass()], "'s Final Stats:")
-        print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()))
+        print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()) + "\tChances: " + str(player.getNumbLives()))
     else: #If the haunt was actually triggered
         for i in range(10, 0, -1):
             print("---------------------------", i, "Turns Left!")
@@ -314,7 +354,7 @@ def main():
 
         print("Thanks for Playing!!!")
         print(player.getName(), "the", CLASSES[player.getClass()], "'s Final Stats:")
-        print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()))
+        print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()) + "\tChances: " + str(player.getNumbLives()))
         
 
 if __name__ == "__main__":
