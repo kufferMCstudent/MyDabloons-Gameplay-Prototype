@@ -1,9 +1,9 @@
 """
 Katherine Uffer
-April 24, 2023
+April 25, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.3.1
+VERSION a1.3.2
 
 Player Class
 
@@ -17,8 +17,7 @@ FEATURES:
     - Lives
 
 CHANGELOG:
-    - Added private variable numbLives
-    - Added setter and getter for numbLives
+    - Added goalReached() to determine if Player has reached class goal
 
 """
 class Player:
@@ -75,3 +74,9 @@ class Player:
     
     def getNumbLives(self):
         return self.__numbLives
+
+    def goalReached(self):
+        if self.__charClass == 0: #Attacker
+            return self.__fightStat >= 10
+        elif self.__charClass == 1: #Defender
+            return self.__armorStat >= 10

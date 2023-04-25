@@ -1,9 +1,9 @@
 """
 Katherine Uffer
-April 24, 2023
+April 25, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.3.1
+VERSION a1.3.2
 
 Card Class
 
@@ -18,7 +18,7 @@ FEATURES:
     - Haunt
 
 CHANGELOG:
-    - Changed expected values for cardType to accomodate new phaseTwo() implementation
+    - n/a
 
 """
 class Card:

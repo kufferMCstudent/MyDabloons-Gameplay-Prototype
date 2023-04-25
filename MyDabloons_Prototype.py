@@ -1,9 +1,9 @@
 """
 Katherine Uffer
-April 24, 2023
+April 25, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.3.1
+VERSION a1.3.2
 
 Main Class
 
@@ -15,12 +15,13 @@ FEATURES:
     - Shop to buy *and sell* items
     - Go bankrupt to end the game early
     - Limited number of chances to gain card bonuses
+    - Class-Specific end-game goal
 
 CHANGELOG:
-    - Added phaseTwo() function and moved code from phaseOne() to phaseTwo()
-    - Added a limit to the number of challenges a Player can make in a game
-    - Changed balancing of Fight and Armor for cards in deck and Class starting stats
-    - Changed cardTypes to reflect changes in Card class
+    - Changed printout order in gameplayLoop() to make stats per turn more clear
+    - Added cladd goal check at end of main()
+    - Changed makePlayer() to get values from different variables and print starting stats and goals
+    - Changed CLASSES list to match makePlayer() goals
 
 """
 import random
@@ -41,7 +42,7 @@ SHOPDECK = [ Card.Card("Armor", 2, 0, 1, "Plus 1 Armor Stat", 7, 5, 0), Card.Car
              Card.Card("Armor", 2, 0, 2, "Plus 2 Armor Stat", 14, 9, 0), Card.Card("Sword", 2, 2, 0, "Plus 2 Fight Stat", 14, 9, 0),
              Card.Card("Armor", 2, 0, 3, "Plus 3 Armor Stat", 18, 11, 0), Card.Card("Sword", 2, 3, 0, "Plus 3 Fight Stat", 18, 11, 0)  ]
 
-CLASSES = ["Attacker", "Defender"]
+CLASSES = [["Attacker", "Fight", 2, 1], ["Defender", "Armor", 1, 2]]
 
 """
 FUNCTION: makePlayer()
@@ -54,16 +55,19 @@ def makePlayer():
     name = input("Type your character's name here: ")
     
     classChoice = "a"
-    while classChoice not in CLASSES:
+    while True:
         print(f"Please pick a class:")
         for i in range(0, len(CLASSES)):
-            print(f"\t-", CLASSES[i])
+            print("\t", i+1, ")", CLASSES[i][0], "\tFight Stat:", CLASSES[i][2], "\tArmor Stat", CLASSES[i][3])
+            print("\t  GOAL: Get a", CLASSES[i][1], "stat to 10 or higher.")
+            print()
+            print()
         classChoice = input("Input: ").strip()
     
-    if classChoice == CLASSES[0]: #If Attacker chosen
-        return Player.Player(name, 2, 1, 5, [], 0, 5)
-    elif classChoice == CLASSES[1]: #If Defender Chosen
-        return Player.Player(name, 1, 2, 5, [], 1, 5)
+        if classChoice == "1": #If Attacker chosen
+            return Player.Player(name, 2, 1, 5, [], 0, 5)
+        elif classChoice == "2": #If Defender Chosen
+            return Player.Player(name, 1, 2, 5, [], 1, 5)
 
 """
 FUNCTION: buy()
@@ -307,10 +311,10 @@ PURPOSE: Run player through Phase 1, 2, and 3, and print Player stats. Keep trac
          Returns the haunt value to where it was called from
 """
 def gameplayLoop(player, haunt):
+    print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()) + "\tChances: " + str(player.getNumbLives()))
+    print()
     haunt = phaseOne(player, haunt)
     phaseThree(player)
-    print()
-    print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()) + "\tChances: " + str(player.getNumbLives()))
     print()
     return haunt
 
@@ -327,16 +331,17 @@ def main():
     print('              __,.-" =__Y=')
     print('            ."        )             My Dabloons!')
     print('      _    /   ,    \/\_   The Prorotype for the card game.')
-    print('     ((____|    )_-\ \_-`         Version a1.3.1')
+    print('     ((____|    )_-\ \_-`         Version a1.3.2')
     print("     `-----'`-----` `--`")
 
     player = makePlayer()
     counter = 0
     haunt = 0
 
+    #print()
+    #print(player.getName(), "the", CLASSES[player.getClass()][0])
+    #print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()) + "\tChances: " + str(player.getNumbLives()))
     print()
-    print(player.getName(), "the", CLASSES[player.getClass()])
-    print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()) + "\tChances: " + str(player.getNumbLives()))
 
     while haunt != 10:
         counter += 1
@@ -352,8 +357,18 @@ def main():
             print("---------------------------", i, "Turns Left!")
             gameplayLoop(player, haunt)
 
+        if player.goalReached():
+            print()
+            print("You have acheived your goal! You won the game!")
+            print()
+        else:
+            print()
+            print("You have not acheived your goal. Better luck next time!")
+            print()
+
+
         print("Thanks for Playing!!!")
-        print(player.getName(), "the", CLASSES[player.getClass()], "'s Final Stats:")
+        print(player.getName(), "the", CLASSES[player.getClass()][0], "'s Final Stats:")
         print("Balance: " + str(player.getBalance()) + "\tFight Stat: " + str(player.getFightStat()) + "\tArmor Stat: " + str(player.getArmorStat()) + "\tChances: " + str(player.getNumbLives()))
         
 
