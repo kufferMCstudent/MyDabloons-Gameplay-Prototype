@@ -3,7 +3,7 @@ Katherine Uffer
 April 25, 2023
 
 GAME TITLE: My Dabloons!
-VERSION a1.3.2
+VERSION a1.4.0
 
 Card Class
 
